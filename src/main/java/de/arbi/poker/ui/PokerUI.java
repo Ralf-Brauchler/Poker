@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import net.engio.mbassy.bus.MBassador;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,15 +16,17 @@ public class PokerUI extends Application {
     private static final Logger log = LoggerFactory.getLogger(PokerUI.class);
 
     private Thread serverThread;
+    private volatile MBassador bus;
 
     @Override
     public void init() throws Exception {
         super.init();
+        bus = new MBassador();
         serverThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    PokerCom.runServer();
+                    PokerCom.runServer(bus);
                 } catch (Exception e) {
                     log.error("Uncaught Exception", e);
                 }
