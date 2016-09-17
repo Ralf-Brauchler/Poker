@@ -28,5 +28,13 @@ class PokerSpec extends Specification {
         url    | result
         '/foo' | 'from the foo handler'
         '/bar' | 'from the bar handler'
+        '/nested'| 'root handler!'
+        '/nested/one' | 'from the nested handler, var1: one, var2: null'
+        '/nested/one/two' | 'from the nested handler, var1: one, var2: two'
+        '/nested/one:two' | 'from the nested handler, var1: one:two, var2: null'
+        '/injected?text=one' | 'service value: one'
+        '/injected/hallo' | 'root handler!'
+        '/injected' | 'service value: none'
+
     }
 }

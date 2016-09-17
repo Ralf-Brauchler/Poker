@@ -18,6 +18,12 @@ public class PokerHandler implements Handler {
 
     @Override
     public void handle(Context context) {
-        context.render("service value: " + pokerService.getValue());
+        String parameter = context.getRequest().getQueryParams().get("text");
+
+        if (parameter != null) {
+            context.render("service value: " + pokerService.getValue(parameter));
+        } else {
+            context.render("service value: " + pokerService.getValue());
+        }
     }
 }
