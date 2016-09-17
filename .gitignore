@@ -1,0 +1,16 @@
+target
+build
+out
+.gradle
+.lazybones
+*.iml
+*.iws
+*.ipr
+.idea
+.DS_Store
+.gradletasknamecache
+preferences.json
+scenicView.properties
+incoming
+classes
+docs
