@@ -1,28 +1,36 @@
 package de.arbi.poker;
 
-import de.arbi.poker.PokerService;
+import java.net.URL;
 
 public class PokerServiceImpl implements PokerService {
     public String getValue() {
         return "none";
     }
+
     public String getValue(String given) {
         return given;
     }
 
-    public String joinPlayer(String name, String ipadress) {
-        return "joining player " + name + "with ip:" + ipadress;
+    public boolean joinGame(String player, URL url) {
+        System.out.println("joining game " + player + "on url:" + url);
+        return true;
     }
 
-    public String joinedPlayer(String name, String ipadress) {
-        return "player " + name + " joined with ip:" + ipadress;
+    public void onPlayerJoined(String name, URL url) {
+        System.out.println("player " + name + " joined on url:" + url);
     }
 
-    public String message(String name, String text) {
-        return "player givenname send message " + text + " to player " + name;
+    public boolean sendMessage(String name, String text) {
+        System.out.println("player givenname send message " + text + " to player " + name);
+        return true;
     }
 
-    public String shout(String text) {
-        return "player givenname shouted " + text;
+    public boolean shout(String text) {
+        System.out.println("player givenname shouted " + text);
+        return true;
+    }
+
+    private boolean send(String message, URL url) {
+        return false;
     }
 }

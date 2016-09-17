@@ -1,11 +1,17 @@
 package de.arbi.poker;
 
+import java.net.URL;
+
 interface PokerService {
     String getValue();
+
     String getValue(String s);
 
-    String joinPlayer(String name, String ipadress);
-    String joinedPlayer(String name, String ipadress);
-    String message(String name, String text);
-    String shout(String name);
+    boolean joinGame(String player, URL url);
+
+    void onPlayerJoined(String name, URL url);
+
+    boolean sendMessage(String name, String text);
+
+    boolean shout(String text);
 }
