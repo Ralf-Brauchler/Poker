@@ -29,7 +29,11 @@ class PokerSpec extends Specification {
         '/nested/one/two'    | 'from the nested handler, var1: one, var2: two'
         '/nested/one:two'    | 'from the nested handler, var1: one:two, var2: null'
         '/injected?text=one' | 'service value: one'
-        '/injected/hallo'    | 'root handler!'
-        '/injected'          | 'service value: none'
+        '/injected/hallo' | 'root handler!'
+        '/injected' | 'service value: none'
+        '/join/name' | 'joining player name with ip:ip'
+        '/joined/name/ip' | 'player name joined with ip:ip'
+        '/message/name/text' | 'player givenname send message text to player name'
+        '/shout/text' | 'player givenname shouted text'
     }
 }

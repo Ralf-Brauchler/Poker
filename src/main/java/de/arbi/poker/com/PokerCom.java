@@ -43,6 +43,7 @@ public class PokerCom {
                             });
                         })
                         .path("injected", PokerHandler.class) // Map to a dependency injected handler
+                        //.all(PokerHandler.class)
                         .prefix("static", nested -> nested
                                 .fileSystem("public", Chain::files)
                         ) // Bind the /static app path to the src/ratpack/assets/images dir
