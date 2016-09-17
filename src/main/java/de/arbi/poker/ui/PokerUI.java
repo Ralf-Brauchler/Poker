@@ -1,6 +1,6 @@
 package de.arbi.poker.ui;
 
-import de.arbi.poker.Poker;
+import de.arbi.poker.com.PokerCom;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,7 +23,7 @@ public class PokerUI extends Application {
             @Override
             public void run() {
                 try {
-                    Poker.runServer();
+                    PokerCom.runServer();
                 } catch (Exception e) {
                     log.error("Uncaught Exception", e);
                 }
@@ -51,7 +51,7 @@ public class PokerUI extends Application {
 
     @Override
     public void stop() throws Exception {
-        Poker.stopServer();
+        PokerCom.stopServer();
         super.stop();
     }
 }

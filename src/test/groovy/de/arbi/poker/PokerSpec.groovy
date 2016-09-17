@@ -1,5 +1,6 @@
 package de.arbi.poker
 
+import de.arbi.poker.com.PokerCom
 import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.http.TestHttpClient
 import spock.lang.AutoCleanup
@@ -9,7 +10,7 @@ import spock.lang.Unroll
 class PokerSpec extends Specification {
 
     @AutoCleanup
-    MainClassApplicationUnderTest aut = new MainClassApplicationUnderTest(Poker.class);
+    MainClassApplicationUnderTest aut = new MainClassApplicationUnderTest(PokerCom.class);
 
     @Delegate
     TestHttpClient client = TestHttpClient.testHttpClient(aut)
