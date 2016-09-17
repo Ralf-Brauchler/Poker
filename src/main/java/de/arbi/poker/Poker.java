@@ -1,5 +1,7 @@
 package de.arbi.poker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ratpack.guice.Guice;
 import ratpack.handling.Chain;
 import ratpack.server.BaseDir;
@@ -8,8 +10,20 @@ import ratpack.server.RatpackServer;
 import java.util.Map;
 
 public class Poker {
-    public static void main(String[] args) throws Exception {
-        RatpackServer.start(serverSpec -> serverSpec
+    private static final Logger log = LoggerFactory.getLogger(Poker.class);
+
+    private static RatpackServer ratpackServer;
+
+    public static void main(String[] args) {
+        try {
+            runServer();
+        } catch (Exception e) {
+            log.error("Uncaught Exception", e);
+        }
+    }
+
+    public static void runServer() throws Exception {
+        ratpackServer = RatpackServer.start(serverSpec -> serverSpec
                 .serverConfig(config -> config.baseDir(BaseDir.find()))
                 .registry(Guice.registry(bindings -> bindings.module(PokerModule.class)))
                 .handlers(chain -> chain
@@ -28,5 +42,9 @@ public class Poker {
                         .all(ctx -> ctx.render("root handler!"))
                 )
         );
+    }
+
+    public static void stopServer() throws Exception {
+        ratpackServer.stop();
     }
 }

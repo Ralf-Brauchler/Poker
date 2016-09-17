@@ -1,11 +1,6 @@
 package de.arbi.poker
 
-import com.fasterxml.jackson.databind.JsonNode
-import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
-import ratpack.groovy.test.embed.GroovyEmbeddedApp
-import ratpack.guice.Guice
 import ratpack.test.MainClassApplicationUnderTest
-import ratpack.test.embed.EmbeddedApp
 import ratpack.test.http.TestHttpClient
 import spock.lang.AutoCleanup
 import spock.lang.Specification
