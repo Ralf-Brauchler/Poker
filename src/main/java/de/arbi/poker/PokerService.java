@@ -1,6 +1,5 @@
 package de.arbi.poker;
 
-import com.google.common.net.HostAndPort;
 import de.arbi.poker.game.Game;
 import de.arbi.poker.game.Player;
 

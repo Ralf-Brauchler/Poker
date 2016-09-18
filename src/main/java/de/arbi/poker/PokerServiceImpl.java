@@ -1,6 +1,7 @@
 package de.arbi.poker;
 
 import com.google.common.net.HostAndPort;
+import com.google.inject.Singleton;
 import de.arbi.poker.game.Game;
 import de.arbi.poker.game.Player;
 import org.apache.http.HttpResponse;
@@ -10,6 +11,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 
+@Singleton
 public class PokerServiceImpl implements PokerService {
 
     private Game game;
@@ -23,6 +25,7 @@ public class PokerServiceImpl implements PokerService {
     public void newGame(Game game, Player player) {
         this.game = game;
         game.getPlayers().add(player);
+        System.out.println(this);
     }
 
     public boolean joinGame(Game game, String url, Player player) {
@@ -34,10 +37,11 @@ public class PokerServiceImpl implements PokerService {
     }
 
     public void quitGame() {
-
+        this.game = null;
     }
 
     public void onPlayerJoined(Player player) {
+        System.out.println(this);
         game.getPlayers().add(player);
         System.out.println("player " + player.getName() + " joined on:" + player.getHostAndPort());
     }

@@ -11,7 +11,6 @@ import de.arbi.poker.game.Player;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -74,7 +73,8 @@ public class PokerUI extends Application {
             gameScope.enter();
             game = guice.getInstance(Game.class);
             pokerService.newGame(game, createMyPlayer());
-            System.out.println("New Game");
+            //TODO call service for create
+            System.out.println("New Game, " + game.toString());
         });
 
         Button quitBtn = new Button();
