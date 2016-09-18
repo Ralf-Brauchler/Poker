@@ -1,6 +1,7 @@
 package de.arbi.poker.com;
 
 import de.arbi.poker.PokerHandler;
+import de.arbi.poker.handlers.JoinGameHandler;
 import de.arbi.poker.ui.PokerModule;
 import net.engio.mbassy.bus.MBassador;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ public class PokerCom {
                         })
                         .path("injected", PokerHandler.class) // Map to a dependency injected handler
                         */
+                        .post("join/:player", JoinGameHandler.class)
                         .all(PokerHandler.class)
                         /*
                         .prefix("static", nested -> nested

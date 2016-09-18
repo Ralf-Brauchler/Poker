@@ -1,27 +1,49 @@
 package de.arbi.poker;
 
 import com.google.common.net.HostAndPort;
+import de.arbi.poker.game.Game;
+import de.arbi.poker.game.Player;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+import java.io.IOException;
 
 public class PokerServiceImpl implements PokerService {
-    public String getValue() {
-        return "none";
+
+    private Game game;
+
+    public Game getGame() {
+        return game;
     }
 
-    public String getValue(String given) {
-        return given;
+    private HttpClient http = HttpClientBuilder.create().build();
+
+    public void newGame(Game game, Player player) {
+        this.game = game;
+        game.getPlayers().add(player);
     }
 
-    public boolean joinGame(String player, HostAndPort url) {
-        System.out.println("joining game " + player + " on url:" + url);
+    public boolean joinGame(Game game, String url, Player player) {
+        this.game = game;
+        game.getPlayers().add(player);
+        game.setHostAndPort(HostAndPort.fromString(url));
+        send(game.getHostAndPort(), "join/" + player.getName());
         return true;
     }
 
-    public void onPlayerJoined(String name, HostAndPort url) {
-        System.out.println("player " + name + " joined on url:" + url);
+    public void quitGame() {
+
     }
 
-    public boolean sendMessage(String name, String text) {
-        System.out.println("player givenname send message " + text + " to player " + name);
+    public void onPlayerJoined(Player player) {
+        game.getPlayers().add(player);
+        System.out.println("player " + player.getName() + " joined on:" + player.getHostAndPort());
+    }
+
+    public boolean sendMessage(Player player, String message) {
+        System.out.println("player givenname send message " + message + " to player " + player.getName());
         return true;
     }
 
@@ -30,7 +52,14 @@ public class PokerServiceImpl implements PokerService {
         return true;
     }
 
-    private boolean send(String message, HostAndPort url) {
+    private boolean send(HostAndPort hostAndPort, String path) {
+        try {
+            HttpResponse response = http.execute(new HttpPost(hostAndPort.toString() + "/" + path));
+            System.out.println(response.getStatusLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
+
 }

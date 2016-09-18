@@ -22,9 +22,9 @@ public class PokerModule extends AbstractModule {
         GameScope gameScope = new GameScope();
         bindScope(GameScoped.class, gameScope);
         bind(GameScope.class).toInstance(gameScope);
+        bind(Game.class);
 
         bind(MBassador.class).toInstance(bus);
         bind(PokerService.class).to(PokerServiceImpl.class);
-        bind(Game.class);
     }
 }

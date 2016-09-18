@@ -1,17 +1,22 @@
 package de.arbi.poker;
 
 import com.google.common.net.HostAndPort;
+import de.arbi.poker.game.Game;
+import de.arbi.poker.game.Player;
 
 public interface PokerService {
-    String getValue();
 
-    String getValue(String s);
+    Game getGame();
 
-    boolean joinGame(String player, HostAndPort ip);
+    void newGame(Game game, Player player);
 
-    void onPlayerJoined(String name, HostAndPort ip);
+    boolean joinGame(Game game, String url, Player player);
 
-    boolean sendMessage(String name, String text);
+    void quitGame();
 
-    boolean shout(String text);
+    void onPlayerJoined(Player player);
+
+    boolean sendMessage(Player player, String message);
+
+    boolean shout(String message);
 }
