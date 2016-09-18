@@ -24,5 +24,7 @@ dependencies {
 
     compile group: 'net.engio', name: 'mbassador', version: '1.2.4.2'
 
+    compile group: 'com.miglayout', name: 'miglayout-javafx', version: '5.0'
+
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
 }

@@ -1,7 +1,7 @@
 package de.arbi.poker.com;
 
 import de.arbi.poker.PokerHandler;
-import de.arbi.poker.PokerModule;
+import de.arbi.poker.ui.PokerModule;
 import net.engio.mbassy.bus.MBassador;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,18 +19,18 @@ public class PokerCom {
 
     public static void main(String[] args) {
         try {
-            runServer(new MBassador());
+            runServer(new PokerModule(new MBassador()));
         } catch (Exception e) {
             log.error("Uncaught Exception", e);
         }
     }
 
-    public static void runServer(MBassador bus) throws Exception {
+    public static RatpackServer runServer(PokerModule pokerModule) throws Exception {
         ratpackServer = RatpackServer.start(serverSpec -> serverSpec
                 .serverConfig(config -> config.baseDir(BaseDir.find()))
                 .registry(Guice.registry(bindings -> {
-                            bindings.module(PokerModule.class);
-                            bindings.bindInstance(MBassador.class, bus);
+                            bindings.module(pokerModule);
+                            bindings.module(PokerComModule.class);
                         }
                 ))
                 .handlers(chain -> chain
@@ -54,6 +54,7 @@ public class PokerCom {
                         .all(ctx -> ctx.render("root handler!"))
                 )
         );
+        return ratpackServer;
     }
 
     public static void stopServer() throws Exception {

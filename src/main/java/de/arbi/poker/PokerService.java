@@ -4,7 +4,7 @@ import com.google.common.net.HostAndPort;
 
 import java.net.URL;
 
-interface PokerService {
+public interface PokerService {
     String getValue();
 
     String getValue(String s);

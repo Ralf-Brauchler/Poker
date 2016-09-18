@@ -1,12 +1,14 @@
-package de.arbi.poker;
+package de.arbi.poker.com;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
+import de.arbi.poker.PokerHandler;
+import de.arbi.poker.PokerService;
+import de.arbi.poker.PokerServiceImpl;
 import ratpack.handling.HandlerDecorator;
 
-public class PokerModule extends AbstractModule{
+public class PokerComModule extends AbstractModule {
     protected void configure() {
-        bind(PokerService.class).to(PokerServiceImpl.class);
         bind(PokerHandler.class);
         Multibinder.newSetBinder(binder(), HandlerDecorator.class).addBinding().toInstance(HandlerDecorator.prepend(new de.arbi.poker.LoggingHandler()));
     }
