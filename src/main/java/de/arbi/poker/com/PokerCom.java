@@ -1,5 +1,6 @@
 package de.arbi.poker.com;
 
+import de.arbi.poker.handlers.CreateGameHandler;
 import de.arbi.poker.handlers.JoinGameHandler;
 import de.arbi.poker.ui.PokerModule;
 import net.engio.mbassy.bus.MBassador;
@@ -9,10 +10,13 @@ import ratpack.guice.Guice;
 import ratpack.server.BaseDir;
 import ratpack.server.RatpackServer;
 
+import java.util.Random;
+
 public class PokerCom {
     private static final Logger log = LoggerFactory.getLogger(PokerCom.class);
+    private static Random random = new Random(System.currentTimeMillis());
 
-    private static RatpackServer ratpackServer;
+    public static RatpackServer ratpackServer;
 
     public static void main(String[] args) {
         try {
@@ -24,7 +28,10 @@ public class PokerCom {
 
     public static RatpackServer runServer(PokerModule pokerModule) throws Exception {
         ratpackServer = RatpackServer.start(serverSpec -> serverSpec
-                .serverConfig(config -> config.baseDir(BaseDir.find()))
+                .serverConfig(config -> {
+                    config.baseDir(BaseDir.find());
+                    config.port(random.nextInt(1000) + 42000);
+                })
                 .registry(Guice.registry(bindings -> {
                             bindings.module(pokerModule);
                             bindings.module(PokerComModule.class);
@@ -32,7 +39,7 @@ public class PokerCom {
                 ))
                 .handlers(chain -> chain
                         .post("join/:player", JoinGameHandler.class)
-//                        .post("create/:player", NewGameHandler.class)
+                        .post("create/:player", CreateGameHandler.class)
                         .all(ctx -> ctx.render("root handler!"))
                 )
         );
