@@ -1,5 +1,7 @@
 package de.arbi.poker;
 
+import com.google.common.net.HostAndPort;
+
 import java.net.URL;
 
 public class PokerServiceImpl implements PokerService {
@@ -11,12 +13,12 @@ public class PokerServiceImpl implements PokerService {
         return given;
     }
 
-    public boolean joinGame(String player, URL url) {
-        System.out.println("joining game " + player + "on url:" + url);
+    public boolean joinGame(String player, HostAndPort url) {
+        System.out.println("joining game " + player + " on url:" + url);
         return true;
     }
 
-    public void onPlayerJoined(String name, URL url) {
+    public void onPlayerJoined(String name, HostAndPort url) {
         System.out.println("player " + name + " joined on url:" + url);
     }
 
@@ -30,7 +32,7 @@ public class PokerServiceImpl implements PokerService {
         return true;
     }
 
-    private boolean send(String message, URL url) {
+    private boolean send(String message, HostAndPort url) {
         return false;
     }
 }

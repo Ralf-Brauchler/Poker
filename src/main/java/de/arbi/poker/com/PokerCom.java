@@ -34,6 +34,7 @@ public class PokerCom {
                         }
                 ))
                 .handlers(chain -> chain
+                        /*
                         .path("foo", ctx -> ctx.render("from the foo handler")) // Map to /foo
                         .path("bar", ctx -> ctx.render("from the bar handler")) // Map to /bar
                         .prefix("nested", nested -> { // Set up a nested routing block, which is delegated to `nestedHandler`
@@ -43,10 +44,13 @@ public class PokerCom {
                             });
                         })
                         .path("injected", PokerHandler.class) // Map to a dependency injected handler
-                        //.all(PokerHandler.class)
+                        */
+                        .all(PokerHandler.class)
+                        /*
                         .prefix("static", nested -> nested
                                 .fileSystem("public", Chain::files)
                         ) // Bind the /static app path to the src/ratpack/assets/images dir
+                        */
                         .all(ctx -> ctx.render("root handler!"))
                 )
         );

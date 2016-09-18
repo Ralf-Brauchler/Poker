@@ -22,6 +22,8 @@ class PokerSpec extends Specification {
 
         where:
         url                  | result
+        '/join/ralf' | 'joining player ralf with ip:127.0.0.1:49931'
+        /*
         '/foo'               | 'from the foo handler'
         '/bar'               | 'from the bar handler'
         '/nested'            | 'root handler!'
@@ -35,5 +37,6 @@ class PokerSpec extends Specification {
         '/joined/name/ip' | 'player name joined with ip:ip'
         '/message/name/text' | 'player givenname send message text to player name'
         '/shout/text' | 'player givenname shouted text'
+        */
     }
 }
