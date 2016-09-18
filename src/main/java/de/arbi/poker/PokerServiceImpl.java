@@ -2,8 +2,6 @@ package de.arbi.poker;
 
 import com.google.common.net.HostAndPort;
 
-import java.net.URL;
-
 public class PokerServiceImpl implements PokerService {
     public String getValue() {
         return "none";

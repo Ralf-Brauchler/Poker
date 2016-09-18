@@ -1,6 +1,5 @@
 package de.arbi.poker.game;
 
-import com.google.inject.Singleton;
 import net.engio.mbassy.bus.MBassador;
 
 import javax.inject.Inject;
