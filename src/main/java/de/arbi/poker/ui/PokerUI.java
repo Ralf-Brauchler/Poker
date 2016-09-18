@@ -14,17 +14,15 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbee.javafx.scene.layout.MigPane;
 import ratpack.server.RatpackServer;
-
-import java.util.Random;
 
 public class PokerUI extends Application {
     private static final Logger log = LoggerFactory.getLogger(PokerUI.class);

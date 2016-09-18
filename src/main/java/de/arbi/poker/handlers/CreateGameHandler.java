@@ -11,14 +11,14 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class NewGameHandler implements Handler {
+public class CreateGameHandler implements Handler {
 
     private final PokerService pokerService;
     private final Game game;
 
 
     @Inject
-    public NewGameHandler(PokerService pokerService, Game game) {
+    public CreateGameHandler(PokerService pokerService, Game game) {
         this.pokerService = pokerService;
         this.game = game;
     }
