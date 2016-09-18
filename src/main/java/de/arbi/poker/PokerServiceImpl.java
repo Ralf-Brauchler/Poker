@@ -54,7 +54,9 @@ public class PokerServiceImpl implements PokerService {
 
     private boolean send(HostAndPort hostAndPort, String path) {
         try {
-            HttpResponse response = http.execute(new HttpPost(hostAndPort.toString() + "/" + path));
+            HttpResponse response = http.execute(
+
+            );
             System.out.println(response.getStatusLine());
         } catch (IOException e) {
             e.printStackTrace();
