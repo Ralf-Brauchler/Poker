@@ -2,7 +2,6 @@ package de.arbi.poker.com;
 
 import de.arbi.poker.handlers.CreateGameHandler;
 import de.arbi.poker.handlers.JoinGameHandler;
-import de.arbi.poker.ui.PokerModule;
 import net.engio.mbassy.bus.MBassador;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,20 +19,20 @@ public class PokerCom {
 
     public static void main(String[] args) {
         try {
-            runServer(new PokerModule(new MBassador()));
+            runServer(new MBassador());
         } catch (Exception e) {
             log.error("Uncaught Exception", e);
         }
     }
 
-    public static RatpackServer runServer(PokerModule pokerModule) throws Exception {
+    public static RatpackServer runServer(MBassador bus) throws Exception {
         ratpackServer = RatpackServer.start(serverSpec -> serverSpec
                 .serverConfig(config -> {
                     config.baseDir(BaseDir.find());
                     config.port(random.nextInt(1000) + 42000);
                 })
                 .registry(Guice.registry(bindings -> {
-                            bindings.module(pokerModule);
+                            bindings.bindInstance(MBassador.class, bus);
                             bindings.module(PokerComModule.class);
                         }
                 ))

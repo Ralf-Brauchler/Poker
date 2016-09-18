@@ -14,20 +14,18 @@ import javax.inject.Singleton;
 public class CreateGameHandler implements Handler {
 
     private final PokerService pokerService;
-    private final Game game;
 
 
     @Inject
-    public CreateGameHandler(PokerService pokerService, Game game) {
+    public CreateGameHandler(PokerService pokerService) {
         this.pokerService = pokerService;
-        this.game = game;
     }
 
     @Override
     public void handle(Context context) {
         HostAndPort host = context.getRequest().getRemoteAddress();
         Player player = new Player(context.getPathTokens().get("player"), host);
-        pokerService.newGame(game, player);
+        pokerService.newGame(pokerService.getGame(), player);
 //        pokerService.onPlayerJoined(player); //TODO decouple newGame from player as standalone
         context.getResponse().status(202).send("joining player " + player.getName() + " on: " + player.getHostAndPort());
     }

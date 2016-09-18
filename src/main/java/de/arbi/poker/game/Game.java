@@ -2,7 +2,9 @@ package de.arbi.poker.game;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.net.HostAndPort;
+import de.arbi.poker.messages.JoinMessage;
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.listener.Handler;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ public class Game {
     @Inject
     public Game(MBassador bus) {
         this.bus = bus;
+        bus.subscribe(this);
     }
 
     public List<Player> getPlayers() {
@@ -35,5 +38,11 @@ public class Game {
 
     public void setHostAndPort(HostAndPort hostAndPort) {
         this.hostAndPort = hostAndPort;
+    }
+
+    @Handler
+    public void joinMessage(JoinMessage msg) {
+        players.add(msg.getPlayer());
+
     }
 }

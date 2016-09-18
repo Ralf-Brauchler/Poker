@@ -53,7 +53,7 @@ public class PokerUI extends Application {
             @Override
             public void run() {
                 try {
-                    ratpackServer = PokerCom.runServer(pokerModule);
+                    ratpackServer = PokerCom.runServer(bus);
                     Platform.runLater(() -> hostAndPort.setValue("http://" + ratpackServer.getBindHost() + ":" + ratpackServer.getBindPort()));
                 } catch (Exception e) {
                     log.error("Uncaught Exception", e);

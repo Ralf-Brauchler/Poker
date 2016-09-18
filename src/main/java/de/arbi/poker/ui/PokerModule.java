@@ -3,7 +3,6 @@ package de.arbi.poker.ui;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import de.arbi.poker.PokerService;
-import de.arbi.poker.PokerServiceImpl;
 import de.arbi.poker.game.Game;
 import de.arbi.poker.game.GameScope;
 import de.arbi.poker.game.GameScoped;
@@ -26,6 +25,6 @@ public class PokerModule extends AbstractModule {
         bind(Game.class);
 
         bind(MBassador.class).toInstance(bus);
-        bind(PokerService.class).to(PokerServiceImpl.class).in(Singleton.class);
+        bind(PokerService.class).in(Singleton.class);
     }
 }
