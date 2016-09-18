@@ -9,6 +9,9 @@ import de.arbi.poker.game.Game;
 import de.arbi.poker.game.GameScope;
 import de.arbi.poker.game.Player;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,10 +19,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbee.javafx.scene.layout.MigPane;
 import ratpack.server.RatpackServer;
+
+import java.util.Random;
 
 public class PokerUI extends Application {
     private static final Logger log = LoggerFactory.getLogger(PokerUI.class);
@@ -34,7 +40,9 @@ public class PokerUI extends Application {
 
     private TextField name;
     private TextField host;
+    private Label hostLbl;
 
+    private StringProperty hostAndPort = new SimpleStringProperty("");
 
     @Override
     public void init() throws Exception {
@@ -49,6 +57,7 @@ public class PokerUI extends Application {
             public void run() {
                 try {
                     ratpackServer = PokerCom.runServer(pokerModule);
+                    Platform.runLater(() -> hostAndPort.setValue("http://" + ratpackServer.getBindHost() + ":" + ratpackServer.getBindPort()));
                 } catch (Exception e) {
                     log.error("Uncaught Exception", e);
                 }
@@ -67,6 +76,9 @@ public class PokerUI extends Application {
         name.setPromptText("Enter your name");
         host = new TextField();
         host.setPromptText("Enter host to join");
+
+        hostLbl = new Label();
+        hostLbl.textProperty().bind(hostAndPort);
 
         Button newBtn = new Button();
         newBtn.setText("New Game");
@@ -96,6 +108,7 @@ public class PokerUI extends Application {
 
         StackPane root = new StackPane();
         MigPane pane = new MigPane("align 50% 50%, gap 3 3, wrap 1", "[align 50%, fill]", "[]");
+        pane.add(hostLbl);
         pane.add(name);
         pane.add(newBtn);
         pane.add(host);
