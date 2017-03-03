@@ -1,7 +1,7 @@
 - PokerUI:  Wie bindet man einen Eventhandler an die Rückkehr des Runlater,
             so dass die Knöpfe erst bedienbar werden wenn der Server läuft.
 
-- UI:       WIrd ein Spiel generiert und dann aus der zweiten Instanz connected,
+- UI:       Wird ein Spiel generiert und dann aus der zweiten Instanz connected,
             dann geht das zweimal gut (Connect-Quit-Connect-Quit) bei dritten connect
             hängt sich die App auf. Wie debugge ich das um den Fehler zu finden.
 
