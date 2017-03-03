@@ -15,8 +15,10 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
+import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 import net.engio.mbassy.bus.MBassador;
 import org.slf4j.Logger;
@@ -35,9 +37,10 @@ public class PokerUI extends Application {
     private Game game;
     private GameScope gameScope;
 
+    private Label hostLbl;
     private TextField name;
     private TextField host;
-    private Label hostLbl;
+    private TextArea events;
 
     private StringProperty hostAndPort = new SimpleStringProperty("");
 
@@ -70,6 +73,8 @@ public class PokerUI extends Application {
         name.setPromptText("Enter your name");
         host = new TextField();
         host.setPromptText("Enter host to join");
+        events = new TextArea();
+        addEvent("event logging starts");
 
         Button newBtn = new Button();
         Button quitBtn = new Button();
@@ -86,7 +91,8 @@ public class PokerUI extends Application {
             newBtn.setDisable(true);
             joinBtn.setDisable(true);
             quitBtn.setDisable(false);
-            System.out.println("New Game, " + game.toString());
+            addEvent("new game");
+
         });
 
         quitBtn.setText("Quit Game");
@@ -97,7 +103,7 @@ public class PokerUI extends Application {
             newBtn.setDisable(false);
             joinBtn.setDisable(false);
             quitBtn.setDisable(true);
-            System.out.println("Quit Game");
+            addEvent("quit game");
         });
 
         joinBtn.setText("Join Game");
@@ -108,7 +114,7 @@ public class PokerUI extends Application {
             newBtn.setDisable(true);
             joinBtn.setDisable(true);
             quitBtn.setDisable(false);
-            System.out.println("Join Game");
+            addEvent("join game");
         });
 
         StackPane root = new StackPane();
@@ -119,14 +125,23 @@ public class PokerUI extends Application {
         pane.add(host);
         pane.add(joinBtn);
         pane.add(quitBtn);
+        pane.add(events);
         root.getChildren().add(pane);
 
-        primaryStage.setScene(new Scene(root, 300, 250));
+        primaryStage.setScene(new Scene(root, 400, 300));
         primaryStage.show();
     }
 
     private Player createMyPlayer() {
         return new Player(name.getText(), HostAndPort.fromParts(ratpackServer.getBindHost(), ratpackServer.getBindPort()));
+    }
+
+    public void addEvent(String eventstring) {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy HH.mm.ss");
+        String fullevent = sdf.format(new java.util.Date()) + ":" + eventstring;
+        events.appendText(fullevent + "\n");
+        System.out.println(fullevent);
+        // log.info(fullevent);
     }
 
     @Override
