@@ -49,17 +49,14 @@ public class PokerUI extends Application {
         guice = Guice.createInjector(pokerModule);
         gameScope = guice.getInstance(GameScope.class);
 
-        serverThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ratpackServer = PokerCom.runServer(bus);
-                    Platform.runLater(() -> hostAndPort.setValue("http://" + ratpackServer.getBindHost() + ":" + ratpackServer.getBindPort()));
-                } catch (Exception e) {
-                    log.error("Uncaught Exception", e);
-                }
+        serverThread = new Thread((() -> {
+            try {
+                ratpackServer = PokerCom.runServer(bus);
+                Platform.runLater(() -> hostAndPort.setValue("http://" + ratpackServer.getBindHost() + ":" + ratpackServer.getBindPort()));
+            } catch (Exception e) {
+                log.error("Uncaught Exception", e);
             }
-        });
+        }));
         serverThread.start();
     }
 
@@ -74,33 +71,43 @@ public class PokerUI extends Application {
         host = new TextField();
         host.setPromptText("Enter host to join");
 
+        Button newBtn = new Button();
+        Button quitBtn = new Button();
+        Button joinBtn = new Button();
+
         hostLbl = new Label();
         hostLbl.textProperty().bind(hostAndPort);
 
-        Button newBtn = new Button();
         newBtn.setText("New Game");
         newBtn.setOnAction(event -> {
             gameScope.enter();
             game = guice.getInstance(Game.class);
             pokerService.newGame(game, createMyPlayer());
-            //TODO call service for create
+            newBtn.setDisable(true);
+            joinBtn.setDisable(true);
+            quitBtn.setDisable(false);
             System.out.println("New Game, " + game.toString());
         });
 
-        Button quitBtn = new Button();
         quitBtn.setText("Quit Game");
+        quitBtn.setDisable(true);
         quitBtn.setOnAction(event -> {
             gameScope.exit();
             pokerService.quitGame();
+            newBtn.setDisable(false);
+            joinBtn.setDisable(false);
+            quitBtn.setDisable(true);
             System.out.println("Quit Game");
         });
 
-        Button joinBtn = new Button();
         joinBtn.setText("Join Game");
         joinBtn.setOnAction(event -> {
             gameScope.enter();
             game = guice.getInstance(Game.class);
             pokerService.joinGame(game, host.getText(), createMyPlayer());
+            newBtn.setDisable(true);
+            joinBtn.setDisable(true);
+            quitBtn.setDisable(false);
             System.out.println("Join Game");
         });
 
