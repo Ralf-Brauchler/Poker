@@ -47,6 +47,7 @@ public class PokerService {
     }
 
     public boolean sendMessage(Player player, String message) {
+
         System.out.println("player givenname send message " + message + " to player " + player.getName());
         return true;
     }

@@ -21,6 +21,7 @@ public class Game {
     @Inject
     public Game(MBassador bus) {
         this.bus = bus;
+        // Todo: question: how can a listener be "this" in this case?
         bus.subscribe(this);
     }
 
@@ -43,6 +44,6 @@ public class Game {
     @Handler
     public void joinMessage(JoinMessage msg) {
         players.add(msg.getPlayer());
-
+        bus.publish("player " + msg.getPlayer().getName() + " added.");
     }
 }

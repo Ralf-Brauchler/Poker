@@ -8,19 +8,24 @@ import de.arbi.poker.com.PokerCom;
 import de.arbi.poker.game.Game;
 import de.arbi.poker.game.GameScope;
 import de.arbi.poker.game.Player;
+import de.arbi.poker.messages.InfoMessage;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
-import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.listener.Handler;
+import net.engio.mbassy.listener.Listener;
+import net.engio.mbassy.listener.References;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbee.javafx.scene.layout.MigPane;
@@ -40,14 +45,18 @@ public class PokerUI extends Application {
     private Label hostLbl;
     private TextField name;
     private TextField host;
-    private TextArea events;
+    private TextArea eventsLog;
 
-    private StringProperty hostAndPort = new SimpleStringProperty("");
+    private StringProperty hostAndPort = new SimpleStringProperty("starting server ...");
 
     @Override
     public void init() throws Exception {
         super.init();
+        eventsLog = new TextArea();
+
         bus = new MBassador();
+        bus.subscribe(new InfoListener());
+
         pokerModule = new PokerModule(bus);
         guice = Guice.createInjector(pokerModule);
         gameScope = guice.getInstance(GameScope.class);
@@ -73,8 +82,8 @@ public class PokerUI extends Application {
         name.setPromptText("Enter your name");
         host = new TextField();
         host.setPromptText("Enter host to join");
-        events = new TextArea();
-        addEvent("event logging starts");
+
+        bus.publish(new InfoMessage("event logging starts"));
 
         Button newBtn = new Button();
         Button quitBtn = new Button();
@@ -82,8 +91,17 @@ public class PokerUI extends Application {
 
         hostLbl = new Label();
         hostLbl.textProperty().bind(hostAndPort);
+        hostLbl.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                bus.publish(new InfoMessage(newValue));
+                newBtn.setDisable(false);
+                joinBtn.setDisable(false);
+            }
+        });
 
         newBtn.setText("New Game");
+        newBtn.setDisable(true);
         newBtn.setOnAction(event -> {
             gameScope.enter();
             game = guice.getInstance(Game.class);
@@ -91,7 +109,7 @@ public class PokerUI extends Application {
             newBtn.setDisable(true);
             joinBtn.setDisable(true);
             quitBtn.setDisable(false);
-            addEvent("new game");
+            bus.publish(new InfoMessage("new game created"));
 
         });
 
@@ -103,10 +121,11 @@ public class PokerUI extends Application {
             newBtn.setDisable(false);
             joinBtn.setDisable(false);
             quitBtn.setDisable(true);
-            addEvent("quit game");
+            bus.publish(new InfoMessage("game quitted"));
         });
 
         joinBtn.setText("Join Game");
+        joinBtn.setDisable(true);
         joinBtn.setOnAction(event -> {
             gameScope.enter();
             game = guice.getInstance(Game.class);
@@ -114,7 +133,7 @@ public class PokerUI extends Application {
             newBtn.setDisable(true);
             joinBtn.setDisable(true);
             quitBtn.setDisable(false);
-            addEvent("join game");
+            bus.publish(new InfoMessage("game joined"));
         });
 
         StackPane root = new StackPane();
@@ -125,7 +144,7 @@ public class PokerUI extends Application {
         pane.add(host);
         pane.add(joinBtn);
         pane.add(quitBtn);
-        pane.add(events);
+        pane.add(eventsLog);
         root.getChildren().add(pane);
 
         primaryStage.setScene(new Scene(root, 400, 300));
@@ -136,12 +155,12 @@ public class PokerUI extends Application {
         return new Player(name.getText(), HostAndPort.fromParts(ratpackServer.getBindHost(), ratpackServer.getBindPort()));
     }
 
-    public void addEvent(String eventstring) {
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy HH.mm.ss");
-        String fullevent = sdf.format(new java.util.Date()) + ":" + eventstring;
-        events.appendText(fullevent + "\n");
-        System.out.println(fullevent);
-        // log.info(fullevent);
+    @Listener(references = References.Strong)
+    class InfoListener {
+        @Handler
+        public void handle(InfoMessage infomessage) {
+            addEvent(infomessage.getInfo());
+        }
     }
 
     @Override
@@ -153,5 +172,12 @@ public class PokerUI extends Application {
             // Ignore
         }
         super.stop();
+    }
+
+    public void addEvent(String newEventstring) {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy HH.mm.ss");
+        String fullevent = sdf.format(new java.util.Date()) + ": " + newEventstring;
+        eventsLog.appendText(fullevent + "\n");
+        System.out.println(fullevent);
     }
 }
