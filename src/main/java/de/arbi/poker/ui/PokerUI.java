@@ -8,7 +8,9 @@ import de.arbi.poker.com.PokerCom;
 import de.arbi.poker.game.Game;
 import de.arbi.poker.game.GameScope;
 import de.arbi.poker.game.Player;
+import de.arbi.poker.messages.ChatMessage;
 import de.arbi.poker.messages.InfoMessage;
+import de.arbi.poker.messages.JoinMessage;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -41,6 +43,7 @@ public class PokerUI extends Application {
     private Injector guice;
     private Game game;
     private GameScope gameScope;
+    private Player player;
 
     private Label hostLbl;
     private TextField name;
@@ -56,6 +59,8 @@ public class PokerUI extends Application {
 
         bus = new MBassador();
         bus.subscribe(new InfoListener());
+        bus.subscribe(new ChatListener());
+        bus.subscribe(new JoinListener());
 
         pokerModule = new PokerModule(bus);
         guice = Guice.createInjector(pokerModule);
@@ -80,10 +85,10 @@ public class PokerUI extends Application {
 
         name = new TextField();
         name.setPromptText("Enter your name");
-        host = new TextField();
+        host = new TextField("http://localhost:42");
         host.setPromptText("Enter host to join");
 
-        bus.publish(new InfoMessage("event logging starts"));
+        bus.publish(new InfoMessage("event logging starts."));
 
         Button newBtn = new Button();
         Button quitBtn = new Button();
@@ -109,8 +114,8 @@ public class PokerUI extends Application {
             newBtn.setDisable(true);
             joinBtn.setDisable(true);
             quitBtn.setDisable(false);
-            bus.publish(new InfoMessage("new game created"));
-
+            bus.publish(new InfoMessage("new game created."));
+            bus.publish(new ChatMessage(player, " created on the move."));
         });
 
         quitBtn.setText("Quit Game");
@@ -151,18 +156,6 @@ public class PokerUI extends Application {
         primaryStage.show();
     }
 
-    private Player createMyPlayer() {
-        return new Player(name.getText(), HostAndPort.fromParts(ratpackServer.getBindHost(), ratpackServer.getBindPort()));
-    }
-
-    @Listener(references = References.Strong)
-    class InfoListener {
-        @Handler
-        public void handle(InfoMessage infomessage) {
-            addEvent(infomessage.getInfo());
-        }
-    }
-
     @Override
     public void stop() throws Exception {
         PokerCom.stopServer();
@@ -174,10 +167,39 @@ public class PokerUI extends Application {
         super.stop();
     }
 
-    public void addEvent(String newEventstring) {
+    private void logEvent(String newEventstring) {
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy HH.mm.ss");
         String fullevent = sdf.format(new java.util.Date()) + ": " + newEventstring;
         eventsLog.appendText(fullevent + "\n");
         System.out.println(fullevent);
+    }
+
+    private Player createMyPlayer() {
+        player = new Player(name.getText(), HostAndPort.fromParts(ratpackServer.getBindHost(), ratpackServer.getBindPort()));
+        return player;
+    }
+
+    @Listener(references = References.Strong)
+    class InfoListener {
+        @Handler
+        public void handle(InfoMessage infomessage) {
+            logEvent(infomessage.getInfo());
+        }
+    }
+
+    @Listener(references = References.Strong)
+    class ChatListener {
+        @Handler
+        public void handle(ChatMessage chatmessage) {
+            logEvent("chat: " + chatmessage.getText());
+        }
+    }
+
+    @Listener(references = References.Strong)
+    class JoinListener {
+        @Handler
+        public void handle(JoinMessage joinmessage) {
+            logEvent("joined: " + joinmessage.getPlayer().getName());
+        }
     }
 }

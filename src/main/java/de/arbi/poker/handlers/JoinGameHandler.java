@@ -1,7 +1,6 @@
 package de.arbi.poker.handlers;
 
 import com.google.common.net.HostAndPort;
-import de.arbi.poker.PokerService;
 import de.arbi.poker.game.Player;
 import de.arbi.poker.messages.JoinMessage;
 import net.engio.mbassy.bus.MBassador;
