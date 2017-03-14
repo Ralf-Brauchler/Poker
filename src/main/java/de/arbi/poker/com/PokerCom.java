@@ -1,9 +1,6 @@
 package de.arbi.poker.com;
 
-import de.arbi.poker.handlers.CreateGameHandler;
-import de.arbi.poker.handlers.JoinGameHandler;
-import de.arbi.poker.handlers.JoinedGameHandler;
-import de.arbi.poker.handlers.RootHandler;
+import de.arbi.poker.handlers.*;
 import net.engio.mbassy.bus.MBassador;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +39,7 @@ public class PokerCom {
                         .post("join/:player/:host/:port", JoinGameHandler.class)
                         .post("create/:player", CreateGameHandler.class)
                         .post("info/joiningplayer/:player", JoinedGameHandler.class)
+                        .post("quit/:player/:host/:port", QuitGameHandler.class)
                         .all(RootHandler.class)
                         .all(ctx -> ctx.render("root handler!"))
                 )

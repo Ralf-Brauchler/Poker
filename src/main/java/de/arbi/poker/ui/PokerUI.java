@@ -11,6 +11,7 @@ import de.arbi.poker.game.Player;
 import de.arbi.poker.messages.ChatMessage;
 import de.arbi.poker.messages.InfoMessage;
 import de.arbi.poker.messages.JoinMessage;
+import de.arbi.poker.messages.QuitMessage;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -61,6 +62,7 @@ public class PokerUI extends Application {
         bus.subscribe(new InfoListener());
         bus.subscribe(new ChatListener());
         bus.subscribe(new JoinListener());
+        bus.subscribe(new QuitListener());
 
         pokerModule = new PokerModule(bus);
         guice = Guice.createInjector(pokerModule);
@@ -99,7 +101,7 @@ public class PokerUI extends Application {
         hostLbl.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                bus.publish(new InfoMessage(newValue));
+                bus.publish(new InfoMessage("server: my url changed to " + newValue));
                 newBtn.setDisable(false);
                 joinBtn.setDisable(false);
             }
@@ -114,8 +116,8 @@ public class PokerUI extends Application {
             newBtn.setDisable(true);
             joinBtn.setDisable(true);
             quitBtn.setDisable(false);
-            bus.publish(new InfoMessage("new game created."));
-            bus.publish(new ChatMessage(player, " created on the move."));
+            bus.publish(new InfoMessage("server: new game created"));
+            bus.publish(new ChatMessage(player, "I created a new game on " + game.getHostAndPort().toString()));
         });
 
         joinBtn.setText("Join Game");
@@ -133,8 +135,8 @@ public class PokerUI extends Application {
         quitBtn.setText("Quit Game");
         quitBtn.setDisable(true);
         quitBtn.setOnAction(event -> {
+            pokerService.quitGame(game, host.getText(), createMyPlayer());
             gameScope.exit();
-            pokerService.quitGame();
             newBtn.setDisable(false);
             joinBtn.setDisable(false);
             quitBtn.setDisable(true);
@@ -183,7 +185,7 @@ public class PokerUI extends Application {
     class InfoListener {
         @Handler
         public void handle(InfoMessage infomessage) {
-            logEvent(infomessage.getInfo());
+            logEvent("info: " + infomessage.getInfo());
         }
     }
 
@@ -191,7 +193,7 @@ public class PokerUI extends Application {
     class ChatListener {
         @Handler
         public void handle(ChatMessage chatmessage) {
-            logEvent("chat: " + chatmessage.getText());
+            logEvent("chat: player " + chatmessage.getPlayer().getName() + " says: " + chatmessage.getText());
         }
     }
 
@@ -199,7 +201,15 @@ public class PokerUI extends Application {
     class JoinListener {
         @Handler
         public void handle(JoinMessage joinmessage) {
-            logEvent("joined: " + joinmessage.getPlayer().getName());
+            logEvent("join: " + joinmessage.getPlayer().getName());
+        }
+    }
+
+    @Listener(references = References.Strong)
+    class QuitListener {
+        @Handler
+        public void handle(QuitMessage quitmessage) {
+            logEvent("quit: " + quitmessage.getPlayer().getName());
         }
     }
 }

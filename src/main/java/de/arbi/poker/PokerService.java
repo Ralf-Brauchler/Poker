@@ -24,6 +24,7 @@ public class PokerService {
 
     public void newGame(Game game, Player player) {
         this.game = game;
+        game.setHostAndPort(player.getHostAndPort());
         game.getPlayers().add(player);
         System.out.println(this);
     }
@@ -33,28 +34,17 @@ public class PokerService {
         game.getPlayers().add(player);
         game.setHostAndPort(HostAndPort.fromString(url.replace("http://", "")));
         String path = "join/" + player.getName() + "/" + player.getHostAndPort().getHostText() + "/" + String.valueOf(player.getHostAndPort().getPort());
+        HttpResponse response = send(game.getHostAndPort(), path);
+        int status = response.getStatusLine().getStatusCode();
+        return (status == 202);
+    }
+
+    public boolean quitGame(Game game, String url, Player player) {
+        game.getPlayers().remove(player);
+        game.setHostAndPort(HostAndPort.fromString(url.replace("http://", "")));
+        String path = "quit/" + player.getName() + "/" + player.getHostAndPort().getHostText() + "/" + String.valueOf(player.getHostAndPort().getPort());
         send(game.getHostAndPort(), path);
-        return true;
-    }
-
-    public void quitGame() {
         this.game = null;
-    }
-
-    public void onPlayerJoined(Player player) {
-        System.out.println(this);
-        game.getPlayers().add(player);
-        // System.out.println("player " + player.getName() + " joined on:" + player.getHostAndPort());
-    }
-
-    public boolean sendMessage(Player player, String message) {
-
-        System.out.println("player givenname send message " + message + " to player " + player.getName());
-        return true;
-    }
-
-    public boolean shout(String text) {
-        System.out.println("player givenname shouted " + text);
         return true;
     }
 
@@ -62,7 +52,6 @@ public class PokerService {
         HttpResponse response = null;
         try {
             response = http.execute(new HttpPost("http://" + hostAndPort.getHostText() + ":" + String.valueOf(hostAndPort.getPort()) + "/" + path));
-            // System.out.println(response.getStatusLine());
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -9,8 +9,6 @@ import ratpack.handling.Handler;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-//import de.arbi.poker.game.Player;
-
 @Singleton
 public class JoinedGameHandler implements Handler {
 
