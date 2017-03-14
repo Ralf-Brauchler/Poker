@@ -118,17 +118,6 @@ public class PokerUI extends Application {
             bus.publish(new ChatMessage(player, " created on the move."));
         });
 
-        quitBtn.setText("Quit Game");
-        quitBtn.setDisable(true);
-        quitBtn.setOnAction(event -> {
-            gameScope.exit();
-            pokerService.quitGame();
-            newBtn.setDisable(false);
-            joinBtn.setDisable(false);
-            quitBtn.setDisable(true);
-            bus.publish(new InfoMessage("game quitted"));
-        });
-
         joinBtn.setText("Join Game");
         joinBtn.setDisable(true);
         joinBtn.setOnAction(event -> {
@@ -139,6 +128,17 @@ public class PokerUI extends Application {
             joinBtn.setDisable(true);
             quitBtn.setDisable(false);
             bus.publish(new InfoMessage("game joined"));
+        });
+
+        quitBtn.setText("Quit Game");
+        quitBtn.setDisable(true);
+        quitBtn.setOnAction(event -> {
+            gameScope.exit();
+            pokerService.quitGame();
+            newBtn.setDisable(false);
+            joinBtn.setDisable(false);
+            quitBtn.setDisable(true);
+            bus.publish(new InfoMessage("game quitted"));
         });
 
         StackPane root = new StackPane();

@@ -31,8 +31,9 @@ public class PokerService {
     public boolean joinGame(Game game, String url, Player player) {
         this.game = game;
         game.getPlayers().add(player);
-        game.setHostAndPort(HostAndPort.fromString(url));
-        send(game.getHostAndPort(), "join/" + player.getName());
+        game.setHostAndPort(HostAndPort.fromString(url.replace("http://", "")));
+        String path = "join/" + player.getName() + "/" + player.getHostAndPort().getHostText() + "/" + String.valueOf(player.getHostAndPort().getPort());
+        send(game.getHostAndPort(), path);
         return true;
     }
 
@@ -43,7 +44,7 @@ public class PokerService {
     public void onPlayerJoined(Player player) {
         System.out.println(this);
         game.getPlayers().add(player);
-        System.out.println("player " + player.getName() + " joined on:" + player.getHostAndPort());
+        // System.out.println("player " + player.getName() + " joined on:" + player.getHostAndPort());
     }
 
     public boolean sendMessage(Player player, String message) {
@@ -57,13 +58,14 @@ public class PokerService {
         return true;
     }
 
-    private boolean send(HostAndPort hostAndPort, String path) {
+    public HttpResponse send(HostAndPort hostAndPort, String path) {
+        HttpResponse response = null;
         try {
-            HttpResponse response = http.execute(new HttpPost(hostAndPort.getHostText() + "/" + path));
-            System.out.println(response.getStatusLine());
+            response = http.execute(new HttpPost("http://" + hostAndPort.getHostText() + ":" + String.valueOf(hostAndPort.getPort()) + "/" + path));
+            // System.out.println(response.getStatusLine());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
+        return response;
     }
 }
