@@ -46,9 +46,14 @@ public class PokerUI extends Application {
     private GameScope gameScope;
     private Player player;
 
-    private Label hostLbl;
+    private Label myurllbl;
+    private Label namelbl;
     private TextField name;
+    private Label hostlbl;
     private TextField host;
+    private Label playerslbl;
+    private TextArea playerlist;
+    private Label eventslbl;
     private TextArea eventsLog;
 
     private StringProperty hostAndPort = new SimpleStringProperty("starting server ...");
@@ -56,6 +61,7 @@ public class PokerUI extends Application {
     @Override
     public void init() throws Exception {
         super.init();
+        playerlist = new TextArea();
         eventsLog = new TextArea();
 
         bus = new MBassador();
@@ -92,44 +98,68 @@ public class PokerUI extends Application {
 
         bus.publish(new InfoMessage("event logging starts."));
 
-        Button newBtn = new Button();
+        Button createBtn = new Button();
+        Button killBtn = new Button();
         Button quitBtn = new Button();
         Button joinBtn = new Button();
 
-        hostLbl = new Label();
-        hostLbl.textProperty().bind(hostAndPort);
-        hostLbl.textProperty().addListener(new ChangeListener<String>() {
+        myurllbl = new Label();
+        myurllbl.textProperty().bind(hostAndPort);
+        myurllbl.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 bus.publish(new InfoMessage("server: my url changed to " + newValue));
-                newBtn.setDisable(false);
+                createBtn.setDisable(false);
                 joinBtn.setDisable(false);
             }
         });
 
-        newBtn.setText("New Game");
-        newBtn.setDisable(true);
-        newBtn.setOnAction(event -> {
+        namelbl = new Label("Name");
+        hostlbl = new Label("Host");
+        playerslbl = new Label("Players");
+        eventslbl = new Label("Events");
+
+        createBtn.setText("Create Game");
+        createBtn.setDisable(true);
+        createBtn.setOnAction(event -> {
             gameScope.enter();
             game = guice.getInstance(Game.class);
             pokerService.newGame(game, createMyPlayer());
-            newBtn.setDisable(true);
+            createBtn.setDisable(true);
+            killBtn.setDisable(false);
             joinBtn.setDisable(true);
-            quitBtn.setDisable(false);
+            quitBtn.setDisable(true);
             bus.publish(new InfoMessage("server: new game created"));
             bus.publish(new ChatMessage(player, "I created a new game on " + game.getHostAndPort().toString()));
+            bus.publish(new JoinMessage(player));
         });
 
+        killBtn.setText("Kill Game");
+        killBtn.setDisable(true);
+        killBtn.setOnAction(event -> {
+            gameScope.exit();
+            game = null; //todo why is this necessary?
+            createBtn.setDisable(false);
+            killBtn.setDisable(true);
+            joinBtn.setDisable(false);
+            quitBtn.setDisable(true);
+            refreshPlayers();
+            bus.publish(new InfoMessage("game killed"));
+        });
         joinBtn.setText("Join Game");
         joinBtn.setDisable(true);
         joinBtn.setOnAction(event -> {
             gameScope.enter();
             game = guice.getInstance(Game.class);
-            pokerService.joinGame(game, host.getText(), createMyPlayer());
-            newBtn.setDisable(true);
-            joinBtn.setDisable(true);
-            quitBtn.setDisable(false);
-            bus.publish(new InfoMessage("game joined"));
+            if (pokerService.joinGame(game, host.getText(), createMyPlayer())) {
+                createBtn.setDisable(true);
+                killBtn.setDisable(true);
+                joinBtn.setDisable(true);
+                quitBtn.setDisable(false);
+                bus.publish(new InfoMessage("game joined"));
+            } else {
+                gameScope.exit();
+            }
         });
 
         quitBtn.setText("Quit Game");
@@ -137,7 +167,9 @@ public class PokerUI extends Application {
         quitBtn.setOnAction(event -> {
             pokerService.quitGame(game, host.getText(), createMyPlayer());
             gameScope.exit();
-            newBtn.setDisable(false);
+            game = null; //todo why is this necessary?
+            createBtn.setDisable(false);
+            killBtn.setDisable(true);
             joinBtn.setDisable(false);
             quitBtn.setDisable(true);
             bus.publish(new InfoMessage("game quitted"));
@@ -145,16 +177,22 @@ public class PokerUI extends Application {
 
         StackPane root = new StackPane();
         MigPane pane = new MigPane("align 50% 50%, gap 3 3, wrap 1", "[align 50%, fill]", "[]");
-        pane.add(hostLbl);
+        pane.add(myurllbl);
+        pane.add(namelbl);
         pane.add(name);
-        pane.add(newBtn);
+        pane.add(createBtn);
+        pane.add(killBtn);
+        pane.add(hostlbl);
         pane.add(host);
         pane.add(joinBtn);
         pane.add(quitBtn);
+        pane.add(playerslbl);
+        pane.add(playerlist);
+        pane.add(eventslbl);
         pane.add(eventsLog);
         root.getChildren().add(pane);
 
-        primaryStage.setScene(new Scene(root, 400, 300));
+        primaryStage.setScene(new Scene(root, 660, 660));
         primaryStage.show();
     }
 
@@ -174,6 +212,14 @@ public class PokerUI extends Application {
         String fullevent = sdf.format(new java.util.Date()) + ": " + newEventstring;
         eventsLog.appendText(fullevent + "\n");
         System.out.println(fullevent);
+    }
+
+    private void refreshPlayers() {
+        if (game != null) {
+            playerlist.setText(game.getPlayers().toString());
+        } else {
+            playerlist.clear();
+        }
     }
 
     private Player createMyPlayer() {
@@ -201,6 +247,7 @@ public class PokerUI extends Application {
     class JoinListener {
         @Handler
         public void handle(JoinMessage joinmessage) {
+            refreshPlayers();
             logEvent("join: " + joinmessage.getPlayer().getName());
         }
     }
@@ -209,6 +256,7 @@ public class PokerUI extends Application {
     class QuitListener {
         @Handler
         public void handle(QuitMessage quitmessage) {
+            refreshPlayers();
             logEvent("quit: " + quitmessage.getPlayer().getName());
         }
     }

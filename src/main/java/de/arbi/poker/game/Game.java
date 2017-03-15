@@ -29,6 +29,10 @@ public class Game {
         return players;
     }
 
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+
     public String toString() {
         return MoreObjects.toStringHelper(this).add("players", players).toString();
     }
