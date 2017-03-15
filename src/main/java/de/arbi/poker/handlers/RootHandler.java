@@ -23,6 +23,6 @@ public class RootHandler implements Handler {
     public void handle(Context context) {
         HostAndPort host = context.getRequest().getRemoteAddress();
         String infomessage = context.getRequest().getHeaders().toString();
-        bus.publish(new InfoMessage(infomessage));
+        bus.post(new InfoMessage(infomessage)).now();
     }
 }

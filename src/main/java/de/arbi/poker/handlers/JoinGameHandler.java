@@ -27,7 +27,8 @@ public class JoinGameHandler implements Handler {
     public void handle(Context context) {
         HostAndPort hostandport = HostAndPort.fromParts(context.getPathTokens().get("host"), Integer.parseInt(context.getPathTokens().get("port")));
         Player player = new Player(context.getPathTokens().get("player"), hostandport);
-        bus.publish(new JoinMessage(player));
+        bus.post(new JoinMessage(player)).now();
+        // do the following for all known players:
         pokerService.send(hostandport, "info/joiningplayer/" + player.getName());
         context.getResponse().status(202).send("joining player" + player.getName() + " on: " + player.getHostAndPort());
     }

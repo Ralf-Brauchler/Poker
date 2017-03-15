@@ -44,7 +44,6 @@ public class PokerUI extends Application {
     private Injector guice;
     private Game game;
     private GameScope gameScope;
-    private Player player;
 
     private Label myurllbl;
     private Label namelbl;
@@ -96,7 +95,7 @@ public class PokerUI extends Application {
         host = new TextField("http://localhost:42");
         host.setPromptText("Enter host to join");
 
-        bus.publish(new InfoMessage("event logging starts."));
+        bus.post(new InfoMessage("event logging starts.")).now();
 
         Button createBtn = new Button();
         Button killBtn = new Button();
@@ -108,7 +107,7 @@ public class PokerUI extends Application {
         myurllbl.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                bus.publish(new InfoMessage("server: my url changed to " + newValue));
+                bus.post(new InfoMessage("server: my url changed to " + newValue)).now();
                 createBtn.setDisable(false);
                 joinBtn.setDisable(false);
             }
@@ -124,14 +123,15 @@ public class PokerUI extends Application {
         createBtn.setOnAction(event -> {
             gameScope.enter();
             game = guice.getInstance(Game.class);
-            pokerService.newGame(game, createMyPlayer());
+            Player player = createMyPlayer();
+            pokerService.newGame(game, player);
             createBtn.setDisable(true);
             killBtn.setDisable(false);
             joinBtn.setDisable(true);
             quitBtn.setDisable(true);
-            bus.publish(new InfoMessage("server: new game created"));
-            bus.publish(new ChatMessage(player, "I created a new game on " + game.getHostAndPort().toString()));
-            bus.publish(new JoinMessage(player));
+            bus.post(new InfoMessage("server: new game created")).now();
+            bus.post(new ChatMessage(player, "I created a new game on " + game.getHostAndPort().toString())).now();
+            bus.post(new JoinMessage(player)).now();
         });
 
         killBtn.setText("Kill Game");
@@ -144,7 +144,7 @@ public class PokerUI extends Application {
             joinBtn.setDisable(false);
             quitBtn.setDisable(true);
             refreshPlayers();
-            bus.publish(new InfoMessage("game killed"));
+            bus.post(new InfoMessage("game killed")).now();
         });
         joinBtn.setText("Join Game");
         joinBtn.setDisable(true);
@@ -156,7 +156,7 @@ public class PokerUI extends Application {
                 killBtn.setDisable(true);
                 joinBtn.setDisable(true);
                 quitBtn.setDisable(false);
-                bus.publish(new InfoMessage("game joined"));
+                bus.post(new InfoMessage("game joined")).now();
             } else {
                 gameScope.exit();
             }
@@ -172,7 +172,7 @@ public class PokerUI extends Application {
             killBtn.setDisable(true);
             joinBtn.setDisable(false);
             quitBtn.setDisable(true);
-            bus.publish(new InfoMessage("game quitted"));
+            bus.post(new InfoMessage("game quitted")).now();
         });
 
         StackPane root = new StackPane();
@@ -223,7 +223,7 @@ public class PokerUI extends Application {
     }
 
     private Player createMyPlayer() {
-        player = new Player(name.getText(), HostAndPort.fromParts(ratpackServer.getBindHost(), ratpackServer.getBindPort()));
+        Player player = new Player(name.getText(), HostAndPort.fromParts(ratpackServer.getBindHost(), ratpackServer.getBindPort()));
         return player;
     }
 

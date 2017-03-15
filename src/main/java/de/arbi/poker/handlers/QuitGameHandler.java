@@ -27,8 +27,9 @@ public class QuitGameHandler implements Handler {
     public void handle(Context context) {
         HostAndPort hostandport = HostAndPort.fromParts(context.getPathTokens().get("host"), Integer.parseInt(context.getPathTokens().get("port")));
         Player player = new Player(context.getPathTokens().get("player"), hostandport);
-        bus.publish(new QuitMessage(player));
-        pokerService.send(hostandport, "info/quittingplayer/haha");
+        bus.post(new QuitMessage(player)).now();
+        // do the following for all connected players
+        // pokerService.send(hostandport, "info/quittingplayer/" + player.getName());
         context.getResponse().status(202).send("quitting player" + player.getName() + " on: " + player.getHostAndPort());
     }
 }

@@ -48,6 +48,6 @@ public class Game {
     @Handler
     public void joinMessage(JoinMessage msg) {
         players.add(msg.getPlayer());
-        bus.publish("player " + msg.getPlayer().getName() + " added.");
+        // bus.post("player " + msg.getPlayer().getName() + " added.").now();
     }
 }
