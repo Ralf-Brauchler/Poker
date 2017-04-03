@@ -27,7 +27,7 @@ public class PokerService {
 
     private HttpClient http = HttpClientBuilder.create().build();
 
-    public boolean newGame(Game game, Player player) {
+    public boolean hostGame(Game game, Player player) {
         this.game = game;
         this.me = player;
         if (game == null || player == null) {

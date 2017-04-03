@@ -124,7 +124,7 @@ public class PokerUI extends Application {
             gameScope.enter();
             game = guice.getInstance(Game.class);
             Player player = createMyPlayer();
-            pokerService.newGame(game, player);
+            pokerService.hostGame(game, player);
             createBtn.setDisable(true);
             killBtn.setDisable(false);
             joinBtn.setDisable(true);
@@ -215,8 +215,9 @@ public class PokerUI extends Application {
     }
 
     private void refreshPlayers() {
+        System.out.println("refreshPlayers: " + game.toString());
         if (game != null) {
-            playerlist.setText(game.getPlayers().toString());
+            playerlist.setText(game.getPlayers().toString().replaceAll("],", "]\n"));
         } else {
             playerlist.clear();
         }
